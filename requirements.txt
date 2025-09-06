@@ -1,0 +1,8 @@
+pandas>=1.5.0
+numpy>=1.23.0
+matplotlib>=3.6.0
+yfinance>=0.2.30
+pandas_datareader>=0.10.0
+scipy>=1.10.0
+pymc>=5.10.0
+arviz>=0.16.1
