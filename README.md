@@ -1,9 +1,9 @@
 # MCMC Bayes: Yields vs. S&P 500 (2005–2024)
 
-금리(미국 국채 2Y/10Y/30Y) 변화와 S&P 500의 **방향성 관계**를 5년 구간별로 베이지안(Beta–Binomial) 모형으로 추정합니다.  
-**Posterior mean과 95% Credible Interval**을 표/그림으로 저장합니다.
+미국 국채 **2Y / 10Y / 30Y** 금리 변화와 **S&P 500** 지수의 **방향성 관계**를 5년 구간으로 나눠 **베이지안(Beta–Binomial)** 모형으로 추정합니다.  
+**Posterior mean**과 **95% Credible Interval**을 표/그림으로 저장합니다.
 
-> **핵심 요약**: 2005–2019에는 금리와 주가가 **동행**(금리↑→SPX↑ 60–75%)했고, 2020–2024에는 관계가 **붕괴**되어 50% 내외 혼조가 나타났습니다.
+> **요약**: 2005–2019에는 금리와 주가가 **동행**(금리↑→SPX↑ 60–75%)하는 경향이 강했고, 2020–2024에는 관계가 **붕괴**되어 50% 내외 혼조가 나타났습니다.
 
 ---
 
@@ -19,10 +19,10 @@
 ├── bayes_results_by_period.csv  # 5년×(만기×조합) 결과 테이블
 ├── main.py
 ├── requirements.txt
-└── .gitignore (권장)
+└── .gitignore
 ```
 
-권장 `.gitignore`:
+**권장 `.gitignore`**
 ```
 # Python
 __pycache__/
@@ -30,20 +30,25 @@ __pycache__/
 *.pyo
 *.pyd
 *.egg-info/
+.ipynb_checkpoints/
+
+# Virtual env
 .venv/
 venv/
+
+# Secrets
 .env
 
 # OS
 .DS_Store
 
-# Plots / caches
+# Generated plots (용량 커지면 제외 권장)
 results_by_period/**/*.png
 ```
 
 ---
 
-## 🔧설치
+## 🔧 설치
 
 ```bash
 # 1) 가상환경 (선택)
@@ -53,63 +58,97 @@ python -m venv .venv
 # macOS/Linux
 source .venv/bin/activate
 
-# 2) 필수 패키지
+# 2) 패키지 설치
 pip install -r requirements.txt
 # (pandas, numpy, matplotlib, yfinance, pandas_datareader, scipy 등)
 ```
 
-> 참고: 최신 yfinance는 `auto_adjust=True` 기본값으로 동작합니다.
+> 참고: 최신 `yfinance`는 `auto_adjust=True` 기본값입니다.
 
 ---
 
-## ▶실행
+## ▶️ 실행
 
 ```bash
 python main.py
 ```
 
 - 결과 CSV: `bayes_results_by_period.csv`  
-- 각 구간 폴더에 **12개 조합(만기 3 × 금리↑/↓ 2 × SPX↑/↓ 2)** 의 Posterior 히스토그램 PNG 저장
+- 각 구간 폴더에 **12개 조합(만기 3 × 금리↑/↓ 2 × SPX↑/↓ 2)** 의 Posterior 히스토그램 **PNG 저장**
 
 ---
 
-## 방법론 (수식)
+## 🧠 방법론 (수식)
 
 ### 변수 정의
-- 주가 로그수익률:  
-  $$ r_t^{\mathrm{SPX}} = \ln\!\left(\frac{P_t}{P_{t-1}}\right) $$
-- 금리 변화(만기 \(k\in\{2Y,10Y,30Y\}\)):  
-  $$ \Delta y_t^{(k)} = y_t^{(k)} - y_{t-1}^{(k)} $$
 
-케이스:
-- 금리 상승일: \( \Delta y_t^{(k)} > 0 \), 하락일: \( \Delta y_t^{(k)} < 0 \)  
-- SPX 상승일: \( r_t^{\mathrm{SPX}} > 0 \), 하락일: \( r_t^{\mathrm{SPX}} < 0 \)
+주가 로그수익률
 
-### 베타-베르누이 모형
-금리 **상승/하락** 조건에서 SPX **상승** 여부를 성공(1)/실패(0) 베르누이 시행으로 모델링:
-- 성공 합 \(S\), 시행수 \(N\)
-- 우도: \( L(\theta\mid x) = \theta^{S}(1-\theta)^{N-S} \)
-
-사전분포(기본): \( \theta \sim \mathrm{Beta}(\alpha_0,\beta_0) \) (기본값 \(\mathrm{Beta}(1,1)\))  
-사후분포: \( \theta\mid \text{data} \sim \mathrm{Beta}(\alpha_0+S,\ \beta_0+N-S) \)
-
-사후평균/분산:
 $$
-\mathbb{E}[\theta\mid \text{data}] = \frac{\alpha_0+S}{\alpha_0+\beta_0+N}, \qquad
-\mathrm{Var}[\theta\mid \text{data}] = \frac{(\alpha_0+S)(\beta_0+N-S)}{(\alpha_0+\beta_0+N)^2(\alpha_0+\beta_0+N+1)}.
+r_t^{\mathrm{SPX}}=\ln\!\left(\frac{P_t}{P_{t-1}}\right)
 $$
 
-### Empirical Bayes (선택)
-표본비율 \( \hat p=S/N \), 표본분산 \( \hat v=\hat p(1-\hat p)/N \) 으로 모멘트 일치:
+금리 변화(만기 $k\in\{2Y,10Y,30Y\}$)
+
 $$
-\alpha = \hat p\!\left(\frac{\hat p(1-\hat p)}{\hat v}-1\right),\quad
-\beta = (1-\hat p)\!\left(\frac{\hat p(1-\hat p)}{\hat v}-1\right).
+\Delta y_t^{(k)}=y_t^{(k)}-y_{t-1}^{(k)}
 $$
 
-### 사후 샘플링
-사후가 Beta로 닫혀 있으므로 MCMC 대신 독립표본:
-- \( \theta^{(i)} \sim \mathrm{Beta}(\alpha_0+S,\beta_0+N-S) \), \(i=1,\dots,M\) (기본 \(M=200{,}000\))
-- 95% CI: 샘플 분위수 2.5%, 97.5%
+케이스 정의
+
+$$
+\text{금리 상승일: }\Delta y_t^{(k)} > 0,\qquad
+\text{금리 하락일: }\Delta y_t^{(k)} < 0
+$$
+
+$$
+\text{SPX 상승일: }r_t^{\mathrm{SPX}} > 0,\qquad
+\text{SPX 하락일: }r_t^{\mathrm{SPX}} < 0
+$$
+
+---
+
+### 베타–베르누이 모형
+
+금리 **상승(또는 하락)** 조건에서 SPX **상승** 여부를 성공(1)/실패(0) 베르누이 시행으로 모델링:
+
+$$
+X_i\sim\mathrm{Bernoulli}(\theta),\quad i=1,\dots,N,\qquad
+S=\sum_{i=1}^{N}X_i
+$$
+
+우도(Likelihood)
+
+$$
+L(\theta\mid x)=\theta^{S}(1-\theta)^{N-S}
+$$
+
+사전분포(Prior)
+
+$$
+\theta\sim\mathrm{Beta}(\alpha_0,\beta_0)
+\quad\text{(기본: }\mathrm{Beta}(1,1)\text{)}
+$$
+
+사후분포(Posterior)
+
+$$
+\theta\mid\text{data}\sim\mathrm{Beta}(\alpha_0+S,\ \beta_0+N-S)
+$$
+
+사후 기댓값/분산
+
+$$
+\mathbb{E}[\theta\mid\text{data}]=\frac{\alpha_0+S}{\alpha_0+\beta_0+N}
+$$
+
+$$
+\mathrm{Var}[\theta\mid\text{data}]
+=\frac{(\alpha_0+S)(\beta_0+N-S)}{(\alpha_0+\beta_0+N)^2(\alpha_0+\beta_0+N+1)}
+$$
+
+---
+
 
 ---
 
