@@ -1,4 +1,3 @@
-# MCMC Bayes: Yields vs. S&P 500 (2005–2024)
 
 미국 국채 **2Y / 10Y / 30Y** 금리 변화와 **S&P 500** 지수의 **방향성 관계**를 5년 구간으로 나눠 **베이지안(Beta–Binomial)** 모형으로 추정합니다.  
 **Posterior mean**과 **95% Credible Interval**을 표/그림으로 저장합니다.
@@ -183,6 +182,19 @@ $$
 | 30Y | 55.1% [52.3–57.9] | 44.9% [42.1–47.7] | 53.3% [50.4–56.1] | 46.7% [43.8–49.6] |
 
 ---
+
+
+<img width="695" height="962" alt="image" src="https://github.com/user-attachments/assets/5f257ec1-b2ea-4d47-bee2-600e4db23bd9" />
+<img width="682" height="459" alt="image" src="https://github.com/user-attachments/assets/54b081ac-9d45-4537-afcc-04fa24560661" />
+<img width="693" height="1010" alt="image" src="https://github.com/user-attachments/assets/5e75a256-e232-41df-8949-4dc450d8f6e1" />
+<img width="687" height="445" alt="image" src="https://github.com/user-attachments/assets/e7aaec65-18b2-420c-bf91-592ffb475c1c" />
+<img width="697" height="738" alt="image" src="https://github.com/user-attachments/assets/ef5c17b7-3fe4-4a12-8c60-1b3c9d7da1d7" />
+<img width="676" height="699" alt="image" src="https://github.com/user-attachments/assets/e393a767-f5cf-4ea8-833f-ff900118ebbb" />
+<img width="689" height="959" alt="image" src="https://github.com/user-attachments/assets/41fd6a7a-16b9-4e02-8444-4ce976d4697f" />
+<img width="693" height="454" alt="image" src="https://github.com/user-attachments/assets/31c94c02-1915-44ce-829c-3c0e42561ccd" />
+
+
+
 
 ## ⚙️ 설정 변경 팁
 
